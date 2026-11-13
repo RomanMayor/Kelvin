@@ -13,3 +13,7 @@ TestResults/
 # Never commit secrets
 appsettings.*.local.json
 .env
+
+# Azure publish profiles contain deployment credentials
+*.PublishSettings
+deploy/

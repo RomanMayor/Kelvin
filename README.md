@@ -23,6 +23,28 @@ dotnet test                                                    # unit tests
 Without a key, the app runs in **sample mode**: real FIRMS extracts for Europe (Oct/Nov 2026) from `src/FireMap.Web/Data/sample/`.
 User-secrets are only loaded in the Development environment. For other environments, set `Firms__MapKey` as an environment variable.
 
+## Deploy to Azure
+
+The app runs on **Azure App Service (Linux, .NET 10 LTS)**. Every push to `main` is built, tested and deployed by
+[`.github/workflows/azure-webapp.yml`](.github/workflows/azure-webapp.yml).
+
+| Resource | Value |
+|---|---|
+| Web app | `kelvin-firemap` → https://kelvin-firemap-a4gne7c7gueudeak.westeurope-01.azurewebsites.net |
+| Plan / region | `plan-kelvin`, F1 Free, West Europe (resource group `rg-kelvin`) |
+| GitHub | variable `AZURE_WEBAPP_NAME`, secret `AZURE_WEBAPP_PUBLISH_PROFILE` |
+
+App settings in Azure (not in this repo):
+- `Firms__MapKey` = the FIRMS key.
+- `Firms__CacheDirectory` = `/home/data/firms-cache`. `/home` is persistent storage; outside `wwwroot`, so a deploy doesn't wipe the cache.
+
+**F1 limits:** 60 CPU-minutes a day, and the app sleeps when idle. Before a demo, scale up:
+
+```powershell
+az appservice plan update -n plan-kelvin -g rg-kelvin --sku B1
+az webapp config set -n kelvin-firemap -g rg-kelvin --always-on true
+```
+
 ## API
 
 | Endpoint | Description |

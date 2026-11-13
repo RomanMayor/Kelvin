@@ -13,4 +13,9 @@
     <PackageReference Include="NetTopologySuite.IO.GeoJSON4STJ" Version="4.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Offline sample data (used when no FIRMS MAP_KEY is configured) must ship with the app. -->
+    <None Include="Data\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
