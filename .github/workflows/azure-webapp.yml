@@ -27,6 +27,20 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # The React client (src/FireMap.Web/ClientApp) is built by `dotnet publish` (PublishClientApp target).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/FireMap.Web/ClientApp/package-lock.json
+
+      - name: Client typecheck and tests
+        working-directory: src/FireMap.Web/ClientApp
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+
       - name: Test
         run: dotnet test tests/FireMap.Tests -c Release
 

@@ -9,7 +9,9 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews(o => o.Filters.Add<ApiExceptionFilter>());
+// API controllers only: the UI is the React SPA in ClientApp/, built into wwwroot/.
+builder.Services.AddControllers(o => o.Filters.Add<ApiExceptionFilter>());
+builder.Services.AddProblemDetails();
 builder.Services.AddResponseCompression(o =>
 {
     o.EnableForHttps = true;
@@ -76,21 +78,23 @@ app.Logger.LogInformation(firmsOptions.IsLive
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler();
     app.UseHsts();
 }
 
 app.UseResponseCompression();
 app.UseHttpsRedirection();
+// Files written into wwwroot after the build (e.g. `npm run build` while the app runs) are not in the
+// static-assets manifest; plain static files cover them. Grid binaries (*.bin.gz) are served as-is and
+// unpacked by the browser, so they must not get a Content-Encoding header.
+app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapControllers();
-app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+app.Map("/api/{**rest}", () => Results.NotFound()); // unknown API paths must not fall through to the SPA
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

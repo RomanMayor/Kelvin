@@ -17,3 +17,8 @@ appsettings.*.local.json
 # Azure publish profiles contain deployment credentials
 *.PublishSettings
 deploy/
+
+# React client: dependencies and build output (ClientApp builds into wwwroot)
+**/ClientApp/node_modules/
+src/FireMap.Web/wwwroot/index.html
+src/FireMap.Web/wwwroot/assets/
